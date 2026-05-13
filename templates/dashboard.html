@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">🏠 Dashboard</h2>
+
+<!-- SUMMARY CARDS -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary p-3 shadow-sm">
+            <h5>📦 Total Products</h5>
+            <h2>{{ total_products }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success p-3 shadow-sm">
+            <h5>🛒 Total Sales</h5>
+            <h2>{{ total_sales }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning p-3 shadow-sm">
+            <h5>💰 Total Revenue</h5>
+            <h2>₹{{ "%.2f"|format(total_revenue) }}</h2>
+        </div>
+    </div>
+</div>
+
+<!-- SALES CHART -->
+<div class="card p-4 mb-4 bg-white shadow-sm">
+    <h5>📈 Sales by Product</h5>
+    {% if chart_labels %}
+    <canvas id="salesChart" height="100"></canvas>
+    {% else %}
+    <p class="text-muted">No sales data yet. Record some sales first!</p>
+    {% endif %}
+</div>
+
+<!-- LOW STOCK ALERT -->
+<div class="card p-4 bg-white shadow-sm">
+    <h5 class="text-danger">⚠️ Low Stock Alerts</h5>
+    {% if low_stock %}
+    <table class="table table-bordered">
+        <thead class="table-danger">
+            <tr>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Quantity Left</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in low_stock %}
+            <tr>
+                <td>{{ product['name'] }}</td>
+                <td>{{ product['category'] }}</td>
+                <td><span class="badge bg-danger">{{ product['quantity'] }} ⚠️</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-success">✅ All products have sufficient stock!</p>
+    {% endif %}
+</div>
+
+<!-- CHART SCRIPT -->
+{% if chart_labels %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels | tojson }},
+            datasets: [{
+                label: 'Units Sold',
+                data: {{ chart_values | tojson }},
+                backgroundColor: [
+                    '#3498db', '#2ecc71', '#e74c3c',
+                    '#f39c12', '#9b59b6', '#1abc9c'
+                ],
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">📊 Reports</h2>
+
+<!-- SUMMARY CARDS -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-white bg-success p-4 shadow-sm">
+            <h5>💰 Total Revenue</h5>
+            <h2>₹{{ "%.2f"|format(total_revenue) }}</h2>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-white bg-primary p-4 shadow-sm">
+            <h5>📦 Total Items Sold</h5>
+            <h2>{{ total_items_sold }}</h2>
+        </div>
+    </div>
+</div>
+
+<!-- BEST SELLING PRODUCTS -->
+<div class="card p-4 mb-4 bg-white shadow-sm">
+    <h5>🏆 Best Selling Products</h5>
+    {% if best_selling %}
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Rank</th>
+                <th>Product Name</th>
+                <th>Units Sold</th>
+                <th>Revenue Generated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in best_selling %}
+            <tr>
+                <td>
+                    {% if loop.index == 1 %} 🥇
+                    {% elif loop.index == 2 %} 🥈
+                    {% elif loop.index == 3 %} 🥉
+                    {% else %} {{ loop.index }}
+                    {% endif %}
+                </td>
+                <td>{{ item['name'] }}</td>
+                <td>{{ item['total_sold'] }}</td>
+                <td>₹{{ "%.2f"|format(item['total_revenue']) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No sales recorded yet!</p>
+    {% endif %}
+</div>
+
+<!-- DAILY SALES -->
+<div class="card p-4 bg-white shadow-sm">
+    <h5>📅 Daily Sales Summary</h5>
+    {% if daily_sales %}
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Number of Sales</th>
+                <th>Daily Revenue</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for day in daily_sales %}
+            <tr>
+                <td>{{ day['sale_date'] }}</td>
+                <td>{{ day['num_sales'] }}</td>
+                <td>₹{{ "%.2f"|format(day['daily_revenue']) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No sales data yet!</p>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">🛒 Sales Management</h2>
+
+<!-- CREATE NEW SALE FORM -->
+<div class="card p-4 mb-4 bg-white shadow-sm">
+    <h5>➕ Create New Sale</h5>
+    <form action="/add_sale" method="POST">
+        <div class="row">
+
+            <!-- Product Dropdown -->
+            <div class="col-md-5">
+                <select name="product_id" class="form-control" required>
+                    <option value="">-- Select Product --</option>
+                    {% for product in products %}
+                    <option value="{{ product['id'] }}">
+                        {{ product['name'] }} (Stock: {{ product['quantity'] }}) — ₹{{ product['price'] }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Quantity -->
+            <div class="col-md-3">
+                <input type="number" name="quantity_sold" class="form-control"
+                       placeholder="Quantity to Sell" min="1" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    Record Sale 💰
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<!-- ALL SALES TABLE -->
+<div class="card p-4 bg-white shadow-sm">
+    <h5>📋 All Sales Records</h5>
+
+    {% if all_sales %}
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Sale ID</th>
+                <th>Product</th>
+                <th>Quantity Sold</th>
+                <th>Total Price (₹)</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in all_sales %}
+            <tr>
+                <td>{{ sale['id'] }}</td>
+                <td>{{ sale['name'] }}</td>
+                <td>{{ sale['quantity_sold'] }}</td>
+                <td>₹{{ sale['total_price'] }}</td>
+                <td>{{ sale['sale_date'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+    <p class="text-muted">No sales recorded yet. Create your first sale above! 🚀</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}
